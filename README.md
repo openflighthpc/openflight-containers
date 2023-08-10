@@ -47,16 +47,19 @@ In EL8, this can be setup with:
 dnf module install container-tools
 ```
 
+Download the `freight` helper script (for downloading, running and using these service containers):
+```bash
+wget -O /usr/sbin/freight https://raw.githubusercontent.com/openflighthpc/openflight-containers/main/bin/freight
+```
+
 ### Get Container Image
 
-- Download/copy the image tarfile created earlier to the host
-- Import image
-  ```bash
-  podman load -o IMAGE_NAME-container.tar IMAGE_NAME
-  ```
+```bash
+freight download SERVICE_NAME
+```
 
 ### Launch Containers
 
 ```bash
-podman run -d --network=host --name=CONTAINER_NAME IMAGE_NAME
+freight launch SERVICE_NAME
 ```
