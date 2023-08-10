@@ -5,7 +5,7 @@
 dnf install -y flight-runway
 dnf install -y git gcc lsof
 
-git clone https://github.com/openflighthpc/flight-hunter /root/flight-hunter
+git clone --depth=1 --no-single-branch https://github.com/openflighthpc/flight-hunter /root/flight-hunter
 cd /root/flight-hunter
 git checkout develop
 /opt/flight/bin/bundle install

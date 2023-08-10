@@ -1,6 +1,8 @@
 FROM localhost/flight-el9-ubi-init
 ADD setup.sh /tmp/setup.sh
 RUN bash /tmp/setup.sh
+# Reduce space usage
+RUN dnf clean all -y 
 # Expose any network ports required for services
 EXPOSE 8888
 CMD [ "/sbin/init" ]
