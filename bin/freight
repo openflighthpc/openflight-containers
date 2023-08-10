@@ -33,10 +33,6 @@ get_info() {
 
 download() {
     get_info
-    if [ -f $DOWNDIR/$imagename ] ; then
-        echo "Image for $SERVICE already exists ($DOWNDIR/$imagename), not downloading"
-        exit 1
-    fi
     echo "Downloading image for $SERVICE"
     wget -O $DOWNDIR/$imagename -q --show-progress $location
     podman load --input $DOWNDIR/$imagename
