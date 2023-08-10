@@ -49,7 +49,8 @@ dnf module install container-tools
 
 Download the `freight` helper script (for downloading, running and using these service containers):
 ```bash
-wget -O /usr/sbin/freight https://raw.githubusercontent.com/openflighthpc/openflight-containers/main/bin/freight
+wget -O /usr/local/bin/freight https://raw.githubusercontent.com/openflighthpc/openflight-containers/main/bin/freight
+chmod +x /usr/local/bin/freight
 ```
 
 ### Get Container Image
