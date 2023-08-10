@@ -2,6 +2,12 @@
 
 Containerfiles and Scripts for Building OpenFlight Containers
 
+## What Images are Here?
+
+- `base`: An service container base image with the OpenFlight repos enabled
+- `cluster-inventory`: A service container running the Flight Hunter inventory server
+- `admin-ssh`: A service container sharing an SSH public key and providing initial admin access to client nodes
+
 ## Build Containers
 
 Example container build command:
