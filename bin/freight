@@ -1,0 +1,94 @@
+#!/bin/bash
+
+# Vars
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+WORKDIR="/opt/flight/opt/freight"
+DOWNDIR="$WORKDIR/images"
+
+# Define Containers
+
+## name,imagename,location,entrypoint
+SERVICES=$(cat << EOF
+hunter,flight-cluster-inventory,https://repo.openflighthpc.org/containers/flight-cluster-inventory-container.tar,/root/bin/hunter
+ssh,flight-admin-ssh,https://repo.openflighthpc.org/containers/flight-admin-ssh-container.tar,ssh
+EOF
+)
+
+# Functions
+prepare() {
+    mkdir -p $WORKDIR
+    mkdir -p $DOWNDIR
+}
+
+get_info() {
+    if ! echo "$SERVICES" |grep -q "^$SERVICE," ; then
+        echo "'$SERVICE': No such service, must be one from 'freight list'"
+        exit 1
+    fi
+    local imgline="$(echo "$SERVICES" |grep "^$SERVICE,")"
+    imagename=$(echo "$imgline" |cut -d, -f2)
+    location=$(echo "$imgline" |cut -d, -f3)
+    entrypoint=$(echo "$imgline" |cut -d, -f4)
+}
+
+download() {
+    get_info
+    if [ -f $DOWNDIR/$imagename ] ; then
+        echo "Image for $SERVICE already exists ($DOWNDIR/$imagename), not downloading"
+        exit 1
+    fi
+    echo "Downloading image for $SERVICE"
+    wget -O $DOWNDIR/$imagename -q --show-progress $location
+    podman load --input $DOWNDIR/$imagename
+}
+
+launch() {
+    get_info
+    if ! podman image exists $imagename ; then
+        echo "Image for '$SERVICE' not present, download with 'freight download $SERVICE'"
+        exit 1
+    fi
+    echo "Launching $SERVICE"
+    podman run -d --network=host --name=$SERVICE $imagename
+}
+
+do_exec() {
+    get_info
+    if ! podman container exists $SERVICE ; then
+        echo "'$SERVICE' not running, start with 'freight launch $SERVICE'"
+        exit 1
+    fi
+    podman exec -it $SERVICE $entrypoint $CMD_ARGS
+}
+
+# Run Command
+
+prepare
+
+SUB="$1"
+SERVICE="$2"
+CMD_ARGS="${@:3}"
+
+case $SUB in
+    "list")
+        echo "Available Services:"
+        echo "$SERVICES" |cut -d, -f1
+    ;;
+    "download")
+        download
+    ;;
+    "launch")
+        launch
+    ;;
+    "do")
+        do_exec
+    ;;
+    *)
+        echo "Command Usage:"
+        echo
+        echo "  freight list        Show available images"
+        echo "  freight download    Download and import image"
+        echo "  freight launch      Launch container"
+        echo "  freight do          Perform action with container"
+    ;;
+esac
