@@ -55,12 +55,30 @@ chmod +x /usr/local/bin/freight
 
 ### Get Container Image
 
+#### Using Freight
+
 ```bash
 freight download SERVICE_NAME
 ```
 
+#### Manually
+
+- Download/copy the image tarfile created earlier to the host
+- Import image
+  ```bash
+  podman load -o IMAGE_NAME-container.tar IMAGE_NAME
+  ```
+
 ### Launch Containers
+
+#### Using Freight
 
 ```bash
 freight launch SERVICE_NAME
+```
+
+#### Manually
+
+```bash
+podman run -d --network=host --name=CONTAINER_NAME IMAGE_NAME
 ```
